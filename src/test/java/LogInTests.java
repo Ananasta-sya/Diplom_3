@@ -5,15 +5,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pageobject.ForgotPasswordPage;
 import pageobject.LogInPage;
 import pageobject.MainPage;
 import pageobject.RegisterPage;
 
-import java.time.Duration;
-
+import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
 
 public class LogInTests {
@@ -26,12 +24,11 @@ public class LogInTests {
     private MainPage mainPage;
     private String password;
     private ForgotPasswordPage forgotPasswordPage;
+    private String accessToken;
 
     @Before
     public void setUp() {
-        driver = WebDriverFactory.createDriver(WebDriverFactory.BrowserType.CHROME);
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        driver.get(RegisterPage.REGISTRATION_URL);
+        driver = WebDriverFactory.createDriver(WebDriverFactory.BrowserType.YANDEX);
         name = CreateUser.generateName();
         email = CreateUser.generateEmail();
         password = CreateUser.generatePassword();
@@ -39,15 +36,22 @@ public class LogInTests {
         logInPage = new LogInPage(driver);
         mainPage = new MainPage(driver);
         forgotPasswordPage = new ForgotPasswordPage(driver);
-        registerPage.registerNewUser(name, email,password);
         driver.get(MainPage.MAIN_URL);
+        accessToken = given()
+                .header("Content-type", "application/json")
+                .body(String.format("{\"email\": \"%s\", \"password\": \"%s\", \"name\": \"%s\"}",
+                        email, password, name))
+                .post(RegisterPage.REGISTRATION_API)
+                .then()
+                .extract()
+                .path("accessToken").toString();
+
     }
     @Test
     @DisplayName("Вход в аккаунт по кнопке Войти на главной странице")
     public void logInFromMainPageTest() {
         mainPage.clickAccountEnterButton();
         logInPage.logIn(email, password);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(mainPage.createOrderButton)).isDisplayed();
         assertTrue(mainPage.createOrderButtonVisible());
     }
     @Test
@@ -55,7 +59,6 @@ public class LogInTests {
     public void logInFromAccountButtonTest() {
         mainPage.clickAccountButton();
         logInPage.logIn(email, password);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(mainPage.createOrderButton)).isDisplayed();
         assertTrue(mainPage.createOrderButtonVisible());
     }
     @Test
@@ -64,7 +67,6 @@ public class LogInTests {
         driver.get(RegisterPage.REGISTRATION_URL);
         registerPage.clickLogInButton();
         logInPage.logIn(email, password);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(mainPage.createOrderButton)).isDisplayed();
         assertTrue(mainPage.createOrderButtonVisible());
     }
     @Test
@@ -73,11 +75,13 @@ public class LogInTests {
         driver.get(ForgotPasswordPage.FORGOTPASSWORD_URL);
         forgotPasswordPage.clickEnterButton();
         logInPage.logIn(email, password);
-        wait.until(ExpectedConditions.visibilityOfElementLocated(mainPage.createOrderButton)).isDisplayed();
         assertTrue(mainPage.createOrderButtonVisible());
     }
     @After
     public void tearDown() {
+    given()
+        .header("Authorization", accessToken)
+        .delete(CreateUser.USER_API);
         driver.quit();
     }
 }

@@ -11,6 +11,7 @@ import java.time.Duration;
 
 public class LogInPage {
     private WebDriver driver;
+    private WebDriverWait wait;
     public static final String LOGIN_URL = "https://stellarburgers.nomoreparties.site/login";
     private final By emailField = By.xpath(".//input[@name='name']");
     private final By passwordField = By.xpath(".//input[@name='Пароль']");
@@ -21,6 +22,7 @@ public class LogInPage {
 
     public LogInPage(WebDriver driver) {
         this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
     @Step ("Ввод значения в поле email")
@@ -37,10 +39,12 @@ public class LogInPage {
     }
     @Step ("Нажатие на кнопку Зарегистрироваться")
     public void clickRegisterButton() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(registerButton)).isDisplayed();
         driver.findElement(registerButton).click();
     }
     @Step ("Нажатие на кнопку Восстановить пароль")
     public void clickForgotPasswordButton() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(forgotPasswordButton)).isDisplayed();
         driver.findElement(forgotPasswordButton).click();
     }
     @Step("Проверка наличия кнопки Войти")
@@ -56,6 +60,7 @@ public class LogInPage {
     public void logIn(String email, String password){
         setEmail(email);
         setPassword(password);
+        wait.until(ExpectedConditions.elementToBeClickable(enterButton));
         clickEnterButton();
     }
 

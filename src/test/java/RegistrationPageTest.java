@@ -8,6 +8,7 @@ import org.openqa.selenium.WebDriver;
 import pageobject.LogInPage;
 import pageobject.RegisterPage;
 
+import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
 
 public class RegistrationPageTest {
@@ -17,6 +18,7 @@ public class RegistrationPageTest {
     private String email;
     private LogInPage logInPage;
     private String password;
+    private String accessToken;
 
     @Before
     public void setUp() {
@@ -44,6 +46,11 @@ public class RegistrationPageTest {
     }
     @After
     public void tearDown() {
+        if (accessToken != null) {
+            given()
+                    .header("Authorization", accessToken)
+                    .delete(CreateUser.USER_API);
+        }
         driver.quit();
     }
 }

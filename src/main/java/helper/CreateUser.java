@@ -3,6 +3,7 @@ package helper;
 import org.apache.commons.lang3.RandomStringUtils;
 
 public class CreateUser {
+    public static final String USER_API = "https://stellarburgers.nomoreparties.site/api/auth/user";
 
     public static String generateName() {
         return RandomStringUtils.randomAlphabetic(10);
@@ -16,4 +17,5 @@ public class CreateUser {
     public static String generateInvalidPassword() {
         return RandomStringUtils.randomAlphabetic(4);
     }
+
 }

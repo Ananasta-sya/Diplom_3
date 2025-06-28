@@ -7,6 +7,7 @@ import org.openqa.selenium.WebDriver;
 public class RegisterPage {
     private WebDriver driver;
     public static final String REGISTRATION_URL = "https://stellarburgers.nomoreparties.site/register";
+    public static final String REGISTRATION_API = "https://stellarburgers.nomoreparties.site/api/auth/register";
     private final By nameField = By.xpath(".//label[text()='Имя']//following-sibling::input");
     private final By emailField = By.xpath(".//label[text()='Email']//following-sibling::input");
     private final By passwordField = By.xpath(".//input[@name='Пароль']");
