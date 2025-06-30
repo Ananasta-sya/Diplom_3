@@ -13,6 +13,7 @@ public class LogInPage {
     private WebDriver driver;
     private WebDriverWait wait;
     public static final String LOGIN_URL = "https://stellarburgers.nomoreparties.site/login";
+    public static final String LOGIN_API = "https://stellarburgers.nomoreparties.site/api/auth/login";
     private final By emailField = By.xpath(".//input[@name='name']");
     private final By passwordField = By.xpath(".//input[@name='Пароль']");
     private final By enterButton = By.xpath(".//button[text()='Войти']");

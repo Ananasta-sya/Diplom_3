@@ -7,8 +7,9 @@ import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import pageobject.LogInPage;
 import pageobject.RegisterPage;
+import userbuilder.CreateUserAPI;
+import userbuilder.User;
 
-import static io.restassured.RestAssured.given;
 import static org.junit.Assert.assertTrue;
 
 public class RegistrationPageTest {
@@ -19,6 +20,8 @@ public class RegistrationPageTest {
     private LogInPage logInPage;
     private String password;
     private String accessToken;
+    CreateUserAPI createUserAPI = new CreateUserAPI();
+    private User user;
 
     @Before
     public void setUp() {
@@ -28,6 +31,7 @@ public class RegistrationPageTest {
         email = CreateUser.generateEmail();
         registerPage = new RegisterPage(driver);
         logInPage = new LogInPage(driver);
+        user = new User(name, email, password);
     }
 
     @Test
@@ -47,9 +51,8 @@ public class RegistrationPageTest {
     @After
     public void tearDown() {
         if (accessToken != null) {
-            given()
-                    .header("Authorization", accessToken)
-                    .delete(CreateUser.USER_API);
+            createUserAPI.logInUserAndGetToken(user);
+            createUserAPI.deleteUser(accessToken);
         }
         driver.quit();
     }
